@@ -147,4 +147,40 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
     assert_equal 1, primary.keys.count
     assert_equal 0, replica.keys.count
   end
+
+  def test_default_key_prefix_custom
+    Cache.default_key_prefix = 'hello'
+
+    Cache.new { 'hello world' }
+    assert_match(/^hello/, redis.keys.first)
+  end
+
+  def test_default_key_prefix_method_name
+    Cache.default_key_prefix = :method_name
+
+    Cache.new { 'hello world' }
+    assert_match(/^test_default_key_prefix_method_name/, redis.keys.first)
+  end
+
+  def test_default_key_prefix_class_name
+    Cache.default_key_prefix = :class_name
+
+    Cache.new { 'hello world' }
+    assert_match(/^CacheTest/, redis.keys.first)
+  end
+
+  def test_key_prefix_custom
+    Cache.new(key_prefix: 'hello') { 'hello world' }
+    assert_match(/^hello/, redis.keys.first)
+  end
+
+  def test_key_prefix_method_name
+    Cache.new(key_prefix: :method_name) { 'hello world' }
+    assert_match(/^test_key_prefix_method_name/, redis.keys.first)
+  end
+
+  def test_key_prefix_class_name
+    Cache.new(key_prefix: :class_name) { 'hello world' }
+    assert_match(/^CacheTest/, redis.keys.first)
+  end
 end

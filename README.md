@@ -8,6 +8,7 @@ Easy caching of Ruby objects, using [Redis](http://redis.io) as a backend store.
   * [marshaling data](#marshaling-data)
   * [ttl](#ttl)
   * [namespaced keys](#namespaced-keys)
+  * [key prefixes](#key-prefixes)
   * [redis replicas](#redis-replicas)
   * [core extension](#core-extension)
 * [License](#license)
@@ -127,6 +128,58 @@ returned object in the cache store. The provided namespace argument is still
 merged together with the file name and line number of the cache request, so you
 can re-use that same `email` namespace in different locations, without worrying
 about any naming collisions.
+
+#### key prefixes
+
+By default, the eventual key ending up in Redis is a 6-character long digest,
+based on the file name, line number, and optional key passed into the Cache
+object:
+
+```ruby
+Cache.new { 'hello world' }
+Cache.backend.keys # => ["22abcc"]
+```
+
+This makes working with keys quick and easy, without worying about conflicting
+keys.
+
+However, this does make it more difficult to selectively delete keys from the
+backend, if you want to purge the cache of specific keys, before their TTL
+expires.
+
+To support this use-case, you can use the `key_prefix` attribute:
+
+```ruby
+Cache.new(key_prefix: 'hello') { 'hello world' }
+Cache.backend.keys # => ["hello_22abcc"]
+```
+
+This allows you to selectively purge keys from Redis:
+
+```ruby
+Cache.backend.del('hello_')
+```
+
+You can also use the special value `:method_name` to dynamically set the key
+prefix based on where the cached object was created:
+
+```ruby
+Cache.new(key_prefix: :method_name) { 'hello world' }
+Cache.backend.keys # => ["test_key_prefix_method_name_22abcc"]
+```
+
+Or, use `:class_name` to group keys in the same class together:
+
+```ruby
+Cache.new(key_prefix: :class_name) { 'hello world' }
+Cache.backend.keys # => ["CacheTest_22abcc"]
+```
+
+You can also define these options globally:
+
+```ruby
+Cache.default_key_prefix = :method_name
+```
 
 #### redis replicas
 

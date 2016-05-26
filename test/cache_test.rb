@@ -77,7 +77,13 @@ class CacheTest < Minitest::Test
 
   def test_cache_default_ttl
     Cache.new { 'hello world' }
-    assert_equal Cache::DEFAULT_TTL, redis.ttl(redis.keys.first)
+    assert_equal Cache.default_ttl, redis.ttl(redis.keys.first)
+  end
+
+  def test_cache_custom_default_ttl
+    Cache.default_ttl = 60
+    Cache.new { 'hello world' }
+    assert_equal 60, redis.ttl(redis.keys.first)
   end
 
   def test_cache_with_ttl

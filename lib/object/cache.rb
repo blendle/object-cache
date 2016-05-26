@@ -5,10 +5,11 @@ require 'object/cache/version'
 
 # Caching of objects in a Redis store
 class Cache
-  DEFAULT_TTL = (7 * 24 * 60 * 60) # 1 week
+  @default_ttl = (7 * 24 * 60 * 60) # 1 week
 
   class << self
     attr_accessor :backend
+    attr_accessor :default_ttl
 
     # new
     #
@@ -42,7 +43,7 @@ class Cache
     #   Cache.new { item } # item is only stored once, and then always
     #                      # retrieved, even if it is a different item
     #
-    def new(key = nil, ttl: DEFAULT_TTL)
+    def new(key = nil, ttl: default_ttl)
       return yield unless replica
 
       key = Digest::SHA1.hexdigest([key, Proc.new.source_location].flatten.join)[0..5]
@@ -76,7 +77,7 @@ class Cache
       true
     end
 
-    def update_cache(key, value, ttl: DEFAULT_TTL)
+    def update_cache(key, value, ttl: default_ttl)
       return unless primary && (value = Marshal.dump(value))
 
       ttl.to_i.zero? ? primary.set(key, value) : primary.setex(key, ttl.to_i, value)

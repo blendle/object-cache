@@ -83,7 +83,14 @@ that every request after the first request uses the value from the cached
 object. After one week, the cached value becomes stale, and the first request
 after that will again store the (possibly changed) object in the cache store.
 
-You can easily modify the `ttl` using the keyword argument by that same name:
+You can globaly set the default ttl to a different value:
+
+```ruby
+Cache.default_ttl = 120
+```
+
+You can easily modify the `ttl` per cached object, using the keyword argument by
+that same name:
 
 ```ruby
 Cache.new(ttl: 60) { 'remember me for 60 seconds!' }

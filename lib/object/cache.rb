@@ -107,7 +107,7 @@ class Cache
       case key_prefix
       when :method_name
         location = caller_locations.find { |l| "#{l.path}#{l.lineno}" == proc.source_location.join }
-        location&.base_label
+        location && location.base_label
       when :class_name
         proc.binding.receiver.class.to_s
       else

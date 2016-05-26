@@ -148,6 +148,9 @@ backend config, with a `primary` and `replicas` key:
 Cache.backend = { primary: Redis.new, replicas: [Redis.new, Redis.new] }
 ```
 
+When writing the initial object to the backend, the `primary` Redis is used. On
+subsequent requests, a random replica is used to retrieve the stored value.
+
 The above example obiously only works if the replicas receive the written data
 from the primary instance.
 

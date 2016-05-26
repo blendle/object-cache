@@ -10,6 +10,7 @@ class Cache
   class << self
     attr_accessor :backend
     attr_accessor :default_ttl
+    attr_accessor :default_key_prefix
 
     # new
     #
@@ -43,10 +44,10 @@ class Cache
     #   Cache.new { item } # item is only stored once, and then always
     #                      # retrieved, even if it is a different item
     #
-    def new(key = nil, ttl: default_ttl)
+    def new(key = nil, ttl: default_ttl, key_prefix: default_key_prefix)
       return yield unless replica
 
-      key = Digest::SHA1.hexdigest([key, Proc.new.source_location].flatten.join)[0..5]
+      key = build_key(key, key_prefix, Proc.new)
 
       if (cached_value = replica.get(key)).nil?
         yield.tap { |value| update_cache(key, value, ttl: ttl) }
@@ -93,6 +94,25 @@ class Cache
 
     def replica
       replicas.sample
+    end
+
+    def build_key(key, key_prefix, proc)
+      hash   = Digest::SHA1.hexdigest([key, proc.source_location].flatten.join)[0..5]
+      prefix = build_key_prefix(key_prefix, proc)
+
+      [prefix, hash].compact.join('_')
+    end
+
+    def build_key_prefix(key_prefix, proc)
+      case key_prefix
+      when :method_name
+        location = caller_locations.find { |l| "#{l.path}#{l.lineno}" == proc.source_location.join }
+        location&.base_label
+      when :class_name
+        proc.binding.receiver.class.to_s
+      else
+        key_prefix
+      end
     end
   end
 end

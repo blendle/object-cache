@@ -1,4 +1,4 @@
-# Object::Cache
+# Object::Cache [![wercker status](https://app.wercker.com/status/8f5b16e230784fd4bd75f267d5d62e85/s/master "wercker status")](https://app.wercker.com/project/bykey/8f5b16e230784fd4bd75f267d5d62e85)
 
 Easy caching of Ruby objects, using [Redis](http://redis.io) as a backend store.
 

@@ -7,9 +7,9 @@ Easy caching of Ruby objects, using [Redis](http://redis.io) as a backend store.
 * [Usage](#usage)
   * [marshaling data](#marshaling-data)
   * [ttl](#ttl)
-  * [namespaced-keys](#namespaced-keys)
-  * [redis-replicas](#redis-replicas)
-  * [core-extension](#core-extension)
+  * [namespaced keys](#namespaced-keys)
+  * [redis replicas](#redis-replicas)
+  * [core extension](#core-extension)
 * [License](#license)
 
 ## Installation

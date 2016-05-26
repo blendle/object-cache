@@ -89,7 +89,8 @@ class Cache
     end
 
     def replicas
-      [backend.is_a?(Hash) ? backend[:replicas] : backend].flatten
+      replicas = backend.is_a?(Hash) ? backend[:replicas] : backend
+      replicas.respond_to?(:sample) ? replicas : [replicas]
     end
 
     def replica

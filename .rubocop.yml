@@ -1,0 +1,10 @@
+AllCops:
+  TargetRubyVersion: 2.3
+  Exclude:
+    - '.wercker/**/*'
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/LineLength:
+  Max: 100

@@ -1,0 +1,4 @@
+/.bundle/
+/.wercker/
+/Gemfile.lock
+/pkg/

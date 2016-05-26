@@ -167,6 +167,15 @@ cache('hello', ttl: 60) { 'hello world' }
 Cache.new('hello', ttl: 60) { 'hello world' }
 ```
 
+Since the core extension adds the `cache` method to the `Object` class, you can
+also call this method directly on any instances inheriting from `Object`:
+
+```ruby
+require 'object/cache/core_extension'
+
+'hello world'.cache(ttl: 60)
+```
+
 That's it!
 
 ## License

@@ -6,9 +6,10 @@ require 'object/cache'
 require 'minitest/autorun'
 
 # :no-doc:
-class CacheTest < Minitest::Test
+class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   def setup
     Cache.backend = MockRedis.new
+    Cache.default_ttl = 604_800
   end
 
   def redis
@@ -101,6 +102,19 @@ class CacheTest < Minitest::Test
     load 'object/cache/core_extension.rb'
     cache(ttl: 60) { 'hello world' }
     assert_equal 60, redis.ttl(redis.keys.first)
+    assert Object.send(:remove_method, :cache)
+  end
+
+  def test_core_extension_on_objects
+    load 'object/cache/core_extension.rb'
+    assert_equal 'hello world', 'hello world'.cache
+    assert Object.send(:remove_method, :cache)
+  end
+
+  def test_core_extension_on_objects_with_arguments
+    load 'object/cache/core_extension.rb'
+    'hello world'.cache(ttl: 30)
+    assert_equal 30, redis.ttl(redis.keys.first)
     assert Object.send(:remove_method, :cache)
   end
 

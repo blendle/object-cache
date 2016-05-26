@@ -137,7 +137,7 @@ backend:
 Cache.backend = Redis.new
 ```
 
-The Ruby Redis library has primary/replicas support [buit-in using Redis
+The Ruby Redis library has primary/replicas support [built-in using Redis
 Sentinel][sentinel].
 
 If however, you have your own setup, and want the writes and reads to be
@@ -151,7 +151,7 @@ Cache.backend = { primary: Redis.new, replicas: [Redis.new, Redis.new] }
 When writing the initial object to the backend, the `primary` Redis is used. On
 subsequent requests, a random replica is used to retrieve the stored value.
 
-The above example obiously only works if the replicas receive the written data
+The above example obviously only works if the replicas receive the written data
 from the primary instance.
 
 #### core extension
@@ -167,8 +167,8 @@ cache('hello', ttl: 60) { 'hello world' }
 Cache.new('hello', ttl: 60) { 'hello world' }
 ```
 
-Since the core extension adds the `cache` method to the `Object` class, you can
-also call this method directly on any instances inheriting from `Object`:
+You can also call this method directly on any instances inheriting from
+`Object`:
 
 ```ruby
 require 'object/cache/core_extension'

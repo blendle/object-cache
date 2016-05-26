@@ -96,6 +96,11 @@ Cache.new(ttl: nil) { 'I am forever in your cache!' }
 Cache.new(ttl: 0) { 'me too!' }
 ```
 
+Note that it is best to never leave a value in the backend forever. Since this
+library uses file names and line numbers to store the value, a change in your
+code might mean a new cache object is created after a deployment, and your old
+cache object becomes orphaned, and will polute your storage forever.
+
 #### namespaced keys
 
 When storing the key/value object into Redis, the key name is based on the file

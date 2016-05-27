@@ -157,7 +157,8 @@ Cache.backend.keys # => ["hello_22abcc"]
 This allows you to selectively purge keys from Redis:
 
 ```ruby
-Cache.backend.del('hello_')
+keys = Cache.backend.keys('hello_*')
+Cache.backend.del(keys)
 ```
 
 You can also use the special value `:method_name` to dynamically set the key

@@ -107,8 +107,8 @@ class Cache
     def build_key_prefix(key_prefix, proc)
       case key_prefix
       when :method_name
-        location = caller_locations.find { |l| "#{l.path}#{l.lineno}" == proc.source_location.join }
-        location && location.base_label
+        location = caller_locations.find { |l| proc.source_location.join == "#{l.path}#{l.lineno}" }
+        location&.base_label
       when :class_name
         proc.binding.receiver.class.to_s
       else

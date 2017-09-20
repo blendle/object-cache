@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'mock_redis'
@@ -21,7 +22,7 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   end
 
   def test_cache_returns_object
-    assert_equal 'hello world', Cache.new { 'hello world' }
+    assert_equal('hello world', Cache.new { 'hello world' })
   end
 
   def test_cache_stores_object
@@ -94,7 +95,7 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
 
   def test_core_extension
     load 'object/cache/core_extension.rb'
-    assert_equal 'hello world', cache { 'hello world' }
+    assert_equal('hello world', cache { 'hello world' })
     assert Object.send(:remove_method, :cache)
   end
 

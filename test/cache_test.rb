@@ -96,27 +96,14 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   def test_core_extension
     load 'object/cache/core_extension.rb'
     assert_equal('hello world', cache { 'hello world' })
-    assert Object.send(:remove_method, :cache)
+    assert Kernel.send(:remove_method, :cache)
   end
 
   def test_core_extension_options
     load 'object/cache/core_extension.rb'
     cache(ttl: 60) { 'hello world' }
     assert_equal 60, redis.ttl(redis.keys.first)
-    assert Object.send(:remove_method, :cache)
-  end
-
-  def test_core_extension_on_objects
-    load 'object/cache/core_extension.rb'
-    assert_equal 'hello world', 'hello world'.cache
-    assert Object.send(:remove_method, :cache)
-  end
-
-  def test_core_extension_on_objects_with_arguments
-    load 'object/cache/core_extension.rb'
-    'hello world'.cache(ttl: 30)
-    assert_equal 30, redis.ttl(redis.keys.first)
-    assert Object.send(:remove_method, :cache)
+    assert Kernel.send(:remove_method, :cache)
   end
 
   def test_backend_with_replicas

@@ -210,8 +210,8 @@ from the primary instance.
 
 #### core extension
 
-Finally, if you want, you can extend `Object` with a `cache` method, for
-convenient access to the cache object:
+Finally, if you want, you can use the `cache` method, for convenient
+access to the cache object:
 
 ```ruby
 require 'object/cache/core_extension'
@@ -219,15 +219,6 @@ require 'object/cache/core_extension'
 # these are the same:
 cache('hello', ttl: 60) { 'hello world' }
 Cache.new('hello', ttl: 60) { 'hello world' }
-```
-
-You can also call this method directly on any instances inheriting from
-`Object`:
-
-```ruby
-require 'object/cache/core_extension'
-
-'hello world'.cache(ttl: 60)
 ```
 
 That's it!

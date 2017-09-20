@@ -193,4 +193,19 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
 
     assert_equal 1, val
   end
+
+  def test_unset_backend_raising_type_error
+    Cache.backend = nil
+    val = 0
+    begin
+      Cache.new do
+        val += 1
+        raise TypeError
+      end
+    rescue
+      nil
+    end
+
+    assert_equal 1, val
+  end
 end

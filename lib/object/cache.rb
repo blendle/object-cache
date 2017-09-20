@@ -47,22 +47,24 @@ class Cache
     def new(key = nil, ttl: default_ttl, key_prefix: default_key_prefix)
       return yield unless replica
 
-      key = build_key(key, key_prefix, Proc.new)
+      begin
+        key = build_key(key, key_prefix, Proc.new)
 
-      if (cached_value = replica.get(key)).nil?
-        yield.tap { |value| update_cache(key, value, ttl: ttl) }
-      else
-        Marshal.load(cached_value)
+        if (cached_value = replica.get(key)).nil?
+          yield.tap { |value| update_cache(key, value, ttl: ttl) }
+        else
+          Marshal.load(cached_value)
+        end
+      rescue TypeError
+        # if `TypeError` is raised, the data could not be Marshal dumped. In that
+        # case, delete anything left in the cache store, and get the data without
+        # caching.
+        #
+        delete(key)
+        yield
+      rescue
+        yield
       end
-    rescue TypeError
-      # if `TypeError` is raised, the data could not be Marshal dumped. In that
-      # case, delete anything left in the cache store, and get the data without
-      # caching.
-      #
-      delete(key)
-      yield
-    rescue
-      yield
     end
 
     def include?(key)

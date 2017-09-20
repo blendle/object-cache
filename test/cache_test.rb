@@ -184,4 +184,13 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
     Cache.new(key_prefix: :class_name) { 'hello world' }
     assert_match(/^CacheTest/, redis.keys.first)
   end
+
+  def test_unset_backend
+    Cache.backend = nil
+    val = 0
+    block = -> { val += 1 }
+    Cache.new(&block)
+
+    assert_equal 1, val
+  end
 end

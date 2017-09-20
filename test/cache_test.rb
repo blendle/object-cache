@@ -190,6 +190,7 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
     val = 0
     block = -> { val += 1 }
     Cache.new(&block)
+    Cache.backend = MockRedis.new
 
     assert_equal 1, val
   end
@@ -206,6 +207,7 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
       nil
     end
 
+    Cache.backend = MockRedis.new
     assert_equal 1, val
   end
 end

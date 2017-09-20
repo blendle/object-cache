@@ -224,4 +224,13 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
 
     assert_equal 1, val
   end
+
+  def test_yield_when_marshal_load_fails
+    testing = -> { Cache.new(key_prefix: 'marshal') { 'hello world' } }
+
+    assert_equal 'hello world', testing.call
+    redis.set(redis.keys('marshal*').first, 'garbage')
+    assert_equal 'hello world', testing.call
+    assert_empty redis.keys('marshal*')
+  end
 end

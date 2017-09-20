@@ -4,7 +4,7 @@ AllCops:
     - '.wercker/**/*'
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
 
 Metrics/LineLength:
   Max: 100

@@ -63,7 +63,12 @@ class Cache
             end
           end
         else
-          Marshal.load(cached_value)
+          begin
+            Marshal.load(cached_value)
+          rescue
+            delete(key)
+            yield
+          end
         end
       end
     end

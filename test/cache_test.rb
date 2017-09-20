@@ -210,4 +210,18 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
     Cache.backend = MockRedis.new
     assert_equal 1, val
   end
+
+  def test_single_yield_on_failure
+    val = 0
+    begin
+      Cache.new do
+        val += 1
+        raise TypeError
+      end
+    rescue
+      nil
+    end
+
+    assert_equal 1, val
+  end
 end

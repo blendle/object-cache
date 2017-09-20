@@ -51,19 +51,20 @@ class Cache
         key = build_key(key, key_prefix, Proc.new)
 
         if (cached_value = replica.get(key)).nil?
-          yield.tap { |value| update_cache(key, value, ttl: ttl) }
+          yield.tap do |value|
+            begin
+              update_cache(key, value, ttl: ttl)
+            rescue TypeError
+              # if `TypeError` is raised, the data could not be Marshal dumped. In that
+              # case, delete anything left in the cache store, and get the data without
+              # caching.
+              #
+              delete(key)
+            end
+          end
         else
           Marshal.load(cached_value)
         end
-      rescue TypeError
-        # if `TypeError` is raised, the data could not be Marshal dumped. In that
-        # case, delete anything left in the cache store, and get the data without
-        # caching.
-        #
-        delete(key)
-        yield
-      rescue
-        yield
       end
     end
 

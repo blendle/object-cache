@@ -47,22 +47,30 @@ class Cache
     def new(key = nil, ttl: default_ttl, key_prefix: default_key_prefix)
       return yield unless replica
 
-      key = build_key(key, key_prefix, Proc.new)
+      begin
+        key = build_key(key, key_prefix, Proc.new)
 
-      if (cached_value = replica.get(key)).nil?
-        yield.tap { |value| update_cache(key, value, ttl: ttl) }
-      else
-        Marshal.load(cached_value)
+        if (cached_value = replica.get(key)).nil?
+          yield.tap do |value|
+            begin
+              update_cache(key, value, ttl: ttl)
+            rescue TypeError
+              # if `TypeError` is raised, the data could not be Marshal dumped. In that
+              # case, delete anything left in the cache store, and get the data without
+              # caching.
+              #
+              delete(key)
+            end
+          end
+        else
+          begin
+            Marshal.load(cached_value)
+          rescue
+            delete(key)
+            yield
+          end
+        end
       end
-    rescue TypeError
-      # if `TypeError` is raised, the data could not be Marshal dumped. In that
-      # case, delete anything left in the cache store, and get the data without
-      # caching.
-      #
-      delete(key)
-      yield
-    rescue
-      yield
     end
 
     def include?(key)
@@ -107,8 +115,8 @@ class Cache
     def build_key_prefix(key_prefix, proc)
       case key_prefix
       when :method_name
-        location = caller_locations.find { |l| "#{l.path}#{l.lineno}" == proc.source_location.join }
-        location && location.base_label
+        location = caller_locations.find { |l| proc.source_location.join == "#{l.path}#{l.lineno}" }
+        location&.base_label
       when :class_name
         proc.binding.receiver.class.to_s
       else

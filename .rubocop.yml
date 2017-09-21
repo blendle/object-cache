@@ -4,7 +4,17 @@ AllCops:
     - '.wercker/**/*'
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
 
 Metrics/LineLength:
   Max: 100
+
+Lint/RescueWithoutErrorClass:
+  Exclude:
+    - 'lib/object/cache.rb'
+    - 'test/cache_test.rb'
+
+Security/MarshalLoad:
+  Exclude:
+    - 'lib/object/cache.rb'
+    - 'test/cache_test.rb'

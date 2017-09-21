@@ -1,11 +1,10 @@
 # frozen_string_literal: true
+
 require 'object/cache'
 
 # :no-doc:
-class Object
+module Kernel
   def cache(key = nil, **options, &block)
-    block = -> { self } unless block_given?
-
     Cache.new(key, **options, &block)
   end
 end

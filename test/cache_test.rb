@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'mock_redis'
@@ -21,7 +22,7 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   end
 
   def test_cache_returns_object
-    assert_equal 'hello world', Cache.new { 'hello world' }
+    assert_equal('hello world', Cache.new { 'hello world' })
   end
 
   def test_cache_stores_object
@@ -94,28 +95,15 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
 
   def test_core_extension
     load 'object/cache/core_extension.rb'
-    assert_equal 'hello world', cache { 'hello world' }
-    assert Object.send(:remove_method, :cache)
+    assert_equal('hello world', cache { 'hello world' })
+    assert Kernel.send(:remove_method, :cache)
   end
 
   def test_core_extension_options
     load 'object/cache/core_extension.rb'
     cache(ttl: 60) { 'hello world' }
     assert_equal 60, redis.ttl(redis.keys.first)
-    assert Object.send(:remove_method, :cache)
-  end
-
-  def test_core_extension_on_objects
-    load 'object/cache/core_extension.rb'
-    assert_equal 'hello world', 'hello world'.cache
-    assert Object.send(:remove_method, :cache)
-  end
-
-  def test_core_extension_on_objects_with_arguments
-    load 'object/cache/core_extension.rb'
-    'hello world'.cache(ttl: 30)
-    assert_equal 30, redis.ttl(redis.keys.first)
-    assert Object.send(:remove_method, :cache)
+    assert Kernel.send(:remove_method, :cache)
   end
 
   def test_backend_with_replicas
@@ -182,5 +170,54 @@ class CacheTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   def test_key_prefix_class_name
     Cache.new(key_prefix: :class_name) { 'hello world' }
     assert_match(/^CacheTest/, redis.keys.first)
+  end
+
+  def test_unset_backend
+    Cache.backend = nil
+    val = 0
+    block = -> { val += 1 }
+    Cache.new(&block)
+    Cache.backend = MockRedis.new
+
+    assert_equal 1, val
+  end
+
+  def test_unset_backend_raising_type_error
+    Cache.backend = nil
+    val = 0
+    begin
+      Cache.new do
+        val += 1
+        raise TypeError
+      end
+    rescue
+      nil
+    end
+
+    Cache.backend = MockRedis.new
+    assert_equal 1, val
+  end
+
+  def test_single_yield_on_failure
+    val = 0
+    begin
+      Cache.new do
+        val += 1
+        raise TypeError
+      end
+    rescue
+      nil
+    end
+
+    assert_equal 1, val
+  end
+
+  def test_yield_when_marshal_load_fails
+    testing = -> { Cache.new(key_prefix: 'marshal') { 'hello world' } }
+
+    assert_equal 'hello world', testing.call
+    redis.set(redis.keys('marshal*').first, 'garbage')
+    assert_equal 'hello world', testing.call
+    assert_empty redis.keys('marshal*')
   end
 end

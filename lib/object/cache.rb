@@ -106,7 +106,7 @@ class Cache
     end
 
     def build_key(key, key_prefix, proc)
-      hash   = Digest::SHA1.hexdigest([key, proc.source_location].flatten.join)[0..5]
+      hash   = Digest::SHA1.hexdigest([key, proc.source_location].flatten.join)[0..11]
       prefix = build_key_prefix(key_prefix, proc)
 
       [prefix, hash].compact.join('_')

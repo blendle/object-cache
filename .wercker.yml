@@ -1,4 +1,4 @@
-box: ruby:2.3
+box: ruby:2.6
 build:
   steps:
   - bundle-install

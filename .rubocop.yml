@@ -9,7 +9,7 @@ Metrics/MethodLength:
 Metrics/LineLength:
   Max: 100
 
-Lint/RescueWithoutErrorClass:
+Style/RescueStandardError:
   Exclude:
     - 'lib/object/cache.rb'
     - 'test/cache_test.rb'

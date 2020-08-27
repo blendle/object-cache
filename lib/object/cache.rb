@@ -44,11 +44,11 @@ class Cache
     #   Cache.new { item } # item is only stored once, and then always
     #                      # retrieved, even if it is a different item
     #
-    def new(key = nil, ttl: default_ttl, key_prefix: default_key_prefix)
+    def new(key = nil, ttl: default_ttl, key_prefix: default_key_prefix, &block)
       return yield unless replica
 
       begin
-        key = build_key(key, key_prefix, Proc.new)
+        key = build_key(key, key_prefix, block)
 
         if (cached_value = replica.get(key)).nil?
           yield.tap do |value|

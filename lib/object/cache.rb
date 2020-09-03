@@ -74,7 +74,7 @@ class Cache
     end
 
     def include?(key)
-      replica.exists(key)
+      replica.exists?(key)
     rescue
       false
     end

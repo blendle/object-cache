@@ -1,0 +1,22 @@
+version: 2
+registries:
+  rubygems-server-gem-fury-io-blendle:
+    type: rubygems-server
+    url: https://gem.fury.io/blendle/
+    token: "${{secrets.RUBYGEMS_SERVER_GEM_FURY_IO_BLENDLE_TOKEN}}"
+  rubygems-server-gems-contribsys-com:
+    type: rubygems-server
+    url: https://gems.contribsys.com/
+    username: "${{secrets.RUBYGEMS_SERVER_GEMS_CONTRIBSYS_COM_USERNAME}}"
+    password: "${{secrets.RUBYGEMS_SERVER_GEMS_CONTRIBSYS_COM_PASSWORD}}"
+
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "04:00"
+  open-pull-requests-limit: 15
+  registries:
+  - rubygems-server-gem-fury-io-blendle
+  - rubygems-server-gems-contribsys-com
